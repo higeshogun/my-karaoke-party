@@ -5,11 +5,11 @@ import { type KaraokeParty } from "party";
 import PlayerScene from "./player-scene";
 
 type Props = {
-  params: { hash: string };
+  params: Promise<{ hash: string }>;
 };
 
 export async function generateMetadata({ params }: Props) {
-  const partyHash = params.hash;
+  const { hash: partyHash } = await params;
 
   const party = await api.party.getByHash({ hash: partyHash });
 
@@ -23,11 +23,12 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function PartyPage({ params }: Props) {
-  const partyHash = params.hash;
+  const { hash: partyHash } = await params;
 
   const partyPromise = api.party.getByHash({ hash: partyHash });
 
-  const req = fetch(`${env.NEXT_PUBLIC_PARTYKIT_URL}/party/${partyHash}`, {
+  const partyKitUrl = env.PARTYKIT_URL_INTERNAL ?? env.NEXT_PUBLIC_PARTYKIT_URL;
+  const req = fetch(`${partyKitUrl}/party/${partyHash}`, {
     method: "GET",
     next: {
       revalidate: 0,

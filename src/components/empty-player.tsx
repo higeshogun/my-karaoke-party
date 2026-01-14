@@ -20,7 +20,7 @@ export function EmptyPlayer({ joinPartyUrl, className }: Props) {
       <div className="flex w-full basis-3/4 items-center justify-center">
         <Image
           src={logo}
-          alt="My Karaoke Party"
+          alt="Pilipino Yatai"
           priority
           className="mx-auto object-contain duration-1000 animate-in zoom-in-150 spin-in-180 max-h-[40vh]"
         />

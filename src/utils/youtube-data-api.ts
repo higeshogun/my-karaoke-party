@@ -114,13 +114,82 @@ class YouTubeDataAPI {
 
         return response.data.items;
       } catch (error) {
-        console.error(`Search for "${query}" with API key #${index + 1} failed: `, error);
+        if (axios.isAxiosError(error)) {
+          console.error(
+            `Search for "${query}" with API key #${index + 1} failed: ${error.message}`,
+            {
+              status: error.response?.status,
+              reason: error.response?.data?.error?.errors?.[0]?.reason,
+              message: error.response?.data?.error?.message,
+            },
+          );
+        } else {
+          console.error(
+            `Search for "${query}" with API key #${index + 1} failed: `,
+            error,
+          );
+        }
         lastError = error;
         // Continue to next API key
       }
     }
 
     // If we get here, all API keys failed
+    throw new Error(
+      `All YouTube API keys failed. Last error: ${lastError instanceof Error ? lastError.message : String(lastError)}`
+    );
+  }
+
+  async getPlaylistItems(playlistId: string, maxResults = 50) {
+    let lastError: unknown;
+
+    for (const [index, apiKey] of this.apiKeys.entries()) {
+      try {
+        console.log(`Fetching playlist "${playlistId}" with API key #${index + 1}`);
+
+        const response = await axios.get<{ items: { snippet: SearchResultSnippet & { resourceId: { videoId: string } } }[] }>(
+          `${this.baseUrl}/playlistItems`,
+          {
+            params: {
+              key: apiKey,
+              part: "snippet",
+              playlistId: playlistId,
+              maxResults,
+            },
+          },
+        );
+
+        // Map playlist items to match SearchResultItem structure
+        return response.data.items.map(item => ({
+          kind: "youtube#searchResult",
+          etag: "", // Not needed for our usage
+          id: {
+            kind: "youtube#video",
+            videoId: item.snippet.resourceId.videoId
+          },
+          snippet: item.snippet
+        } as SearchResultItem));
+
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error(
+            `Playlist fetch for "${playlistId}" with API key #${index + 1} failed: ${error.message}`,
+            {
+              status: error.response?.status,
+              reason: error.response?.data?.error?.errors?.[0]?.reason,
+              message: error.response?.data?.error?.message,
+            },
+          );
+        } else {
+          console.error(
+            `Playlist fetch for "${playlistId}" with API key #${index + 1} failed: `,
+            error,
+          );
+        }
+        lastError = error;
+      }
+    }
+
     throw new Error(
       `All YouTube API keys failed. Last error: ${lastError instanceof Error ? lastError.message : String(lastError)}`
     );

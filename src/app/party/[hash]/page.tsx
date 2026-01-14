@@ -5,11 +5,11 @@ import { api } from "~/trpc/server";
 import { PartyScene } from "./party-scene";
 
 type Props = {
-  params: { hash: string };
+  params: Promise<{ hash: string }>;
 };
 
 export async function generateMetadata({ params }: Props) {
-  const partyHash = params.hash;
+  const { hash: partyHash } = await params;
 
   const party = await api.party.getByHash({ hash: partyHash });
 
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function PartyHashPage({ params }: Props) {
-  const partyHash = params.hash;
+  const { hash: partyHash } = await params;
 
   const party = await api.party.getByHash({ hash: partyHash });
 
@@ -31,8 +31,9 @@ export default async function PartyHashPage({ params }: Props) {
     return <div>Party not found</div>;
   }
 
+  const partyKitUrl = env.PARTYKIT_URL_INTERNAL ?? env.NEXT_PUBLIC_PARTYKIT_URL;
   const req = await fetch(
-    `${env.NEXT_PUBLIC_PARTYKIT_URL}/party/${partyHash}`,
+    `${partyKitUrl}/party/${partyHash}`,
     {
       method: "GET",
       next: {

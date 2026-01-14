@@ -44,7 +44,7 @@ export default function JoinScene({ partyHash }: { partyHash?: string }) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values);
+
 
     setName(values.name);
 
@@ -64,7 +64,7 @@ export default function JoinScene({ partyHash }: { partyHash?: string }) {
               src={logo}
               width={666}
               height={375}
-              alt="My Karaoke Party logo"
+              alt="Pilipino Yatai logo"
               priority={true}
               placeholder="blur"
             />

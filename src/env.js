@@ -12,6 +12,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    PARTYKIT_URL_INTERNAL: z.string().optional(),
   },
 
   /**
@@ -33,6 +34,7 @@ export const env = createEnv({
     YOUTUBE_API_KEY: process.env.YOUTUBE_API_KEY,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_PARTYKIT_URL: process.env.NEXT_PUBLIC_PARTYKIT_URL,
+    PARTYKIT_URL_INTERNAL: process.env.PARTYKIT_URL_INTERNAL,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

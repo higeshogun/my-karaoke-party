@@ -10,8 +10,8 @@ import { createTRPCContext } from "~/server/api/trpc";
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
  * handling a tRPC call from a React Server Component.
  */
-const createContext = cache(() => {
-  const heads = new Headers(headers());
+const createContext = cache(async () => {
+  const heads = new Headers(await headers());
   heads.set("x-trpc-source", "rsc");
 
   return createTRPCContext({
@@ -19,4 +19,21 @@ const createContext = cache(() => {
   });
 });
 
-export const api = createCaller(createContext);
+const getServerCaller = cache(async () => {
+  const ctx = await createContext();
+  return createCaller(ctx);
+});
+
+export const api = new Proxy({} as ReturnType<typeof createCaller>, {
+  get: (_target, prop) => {
+    return new Proxy({}, {
+      get: (_target2, methodProp) => {
+        return async (...args: unknown[]) => {
+          const caller = await getServerCaller();
+          // @ts-expect-error - Dynamic proxy access
+          return caller[prop][methodProp](...args);
+        };
+      },
+    });
+  },
+});

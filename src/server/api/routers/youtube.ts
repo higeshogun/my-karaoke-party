@@ -33,4 +33,37 @@ export const youtubeRouter = createTRPCRouter({
 
       return cachedVideos;
     }),
+
+  getPlaylist: publicProcedure
+    .input(z.object({ url: z.string().url() }))
+    .mutation(async ({ input, ctx }) => {
+      // Extract playlist ID from URL
+      const url = new URL(input.url);
+      const listId = url.searchParams.get("list");
+
+      if (!listId) {
+        throw new Error("Invalid playlist URL: Missing 'list' parameter");
+      }
+
+      log.info("Fetching playlist", { listId });
+
+      const videos = await ctx.youtube.getPlaylistItems(listId, 50);
+      return videos;
+    }),
+
+  getHealth: publicProcedure.query(async ({ ctx }) => {
+    try {
+      // Perform a lightweight check or just verify configuration
+      if (!process.env.YOUTUBE_API_KEY) {
+        return { status: "error", message: "Missing API Key" };
+      }
+      // Optional: Perform a real search to verify quota (might be expensive if spammed)
+      // For now, we assume if keys are there, it's "healthy" in terms of config.
+      // A deeper check could be added if needed.
+      return { status: "ok", message: "Configuration present" };
+    } catch (error) {
+      return { status: "error", message: String(error) };
+    }
+  }),
 });
+

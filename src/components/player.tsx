@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+"use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import YouTube, { type YouTubeProps, type YouTubePlayer } from "react-youtube";
@@ -172,9 +173,8 @@ export function Player({
         key={video.id}
         loading="eager"
         // className={`h-full w-full`}
-        className={`h-full w-full animate-in fade-in ${
-          isReady ? "visible" : "invisible"
-        }`}
+        className={`h-full w-full animate-in fade-in ${isReady ? "visible" : "invisible"
+          }`}
         iframeClassName="w-full h-full"
         // iframeClassName="p2 fixed bottom-0 right-0 h-auto min-h-full w-auto min-w-full"
         videoId={video.id}
@@ -194,9 +194,8 @@ export function Player({
         )}
       >
         <div
-          className={`flex w-full flex-col items-center justify-center bg-black p-4 ${
-            isReady ? "bg-opacity-80" : "bg-opacity-0"
-          }`}
+          className={`flex w-full flex-col items-center justify-center bg-black p-4 ${isReady ? "bg-opacity-80" : "bg-opacity-0"
+            }`}
         >
           <h1 className="text-outline scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
             {decode(video.title)}
@@ -222,9 +221,8 @@ export function Player({
         <QrCode url={joinPartyUrl} />
 
         <div
-          className={`self-end p-2 ${
-            isPlaying && isFullscreen ? "hidden" : "block"
-          }`}
+          className={`self-end p-2 ${isPlaying && isFullscreen ? "hidden" : "block"
+            }`}
         >
           <Button
             // className="bg-yellow-300"

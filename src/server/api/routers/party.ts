@@ -11,15 +11,17 @@ export const partyRouter = createTRPCRouter({
 
       const party = await ctx.db.party.createWithHash(input);
 
-      const res = await fetch(
-        `${env.NEXT_PUBLIC_PARTYKIT_URL}/party/${party.hash}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      const partyKitUrl = env.PARTYKIT_URL_INTERNAL ?? env.NEXT_PUBLIC_PARTYKIT_URL;
+      const url = `${partyKitUrl}/party/${party.hash}`;
+      log.info("Fetching PartyKit", { url });
+
+
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+      });
 
       if (!res.ok) {
         await ctx.db.party.delete({ where: { id: party.id } });

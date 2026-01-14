@@ -11,7 +11,7 @@ export default function TermsOfServicePage() {
 
       <h2>Introduction</h2>
       <p>
-        Welcome to &quot;My Karaoke Party&quot;! These Terms of Service
+        Welcome to &quot;Pilipino Yatai&quot;! These Terms of Service
         (&quot;Terms&quot;) govern your use of our web application
         (&quot;App&quot;) that allows users to search and play karaoke videos
         from YouTube. By using our App, you agree to these Terms. If you do not
@@ -21,7 +21,7 @@ export default function TermsOfServicePage() {
       <h2>Personal Use Only</h2>
       <h3>Non-Commercial Use</h3>
       <p>
-        &quot;My Karaoke Party&quot; is intended for personal use only. You
+        &quot;Pilipino Yatai&quot; is intended for personal use only. You
         agree to use the App solely for private enjoyment, in a non-commercial
         setting. This means:
       </p>
@@ -66,7 +66,7 @@ export default function TermsOfServicePage() {
           organizations (PROs).
         </li>
         <li>
-          &quot;My Karaoke Party&quot; does not provide any licenses or
+          &quot;Pilipino Yatai&quot; does not provide any licenses or
           permissions for public performances. You must independently obtain any
           required licenses from PROs such as ASCAP, BMI, SESAC, or their
           international equivalents.
@@ -100,7 +100,7 @@ export default function TermsOfServicePage() {
       <h2>Limitation of Liability</h2>
       <h3>No Liability for Unauthorized Use</h3>
       <p>
-        &quot;My Karaoke Party&quot; is not responsible for any unauthorized or
+        &quot;Pilipino Yatai&quot; is not responsible for any unauthorized or
         illegal use of the App. You agree to indemnify and hold harmless the
         App&apos;s creators and operators from any claims, damages, or
         liabilities arising from your use of the App in violation of these
@@ -132,7 +132,7 @@ export default function TermsOfServicePage() {
       </p>
 
       <p>
-        By using &quot;My Karaoke Party&quot;, you acknowledge that you have
+        By using &quot;Pilipino Yatai&quot;, you acknowledge that you have
         read, understood, and agree to be bound by these Terms of Service.
       </p>
 

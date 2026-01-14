@@ -1,22 +1,25 @@
 {
   "name": "mykaraoke-party",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": "EMPZ",
-  "repository": "https://github.com/empz/my-karaoke-party",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/empz/my-karaoke-party.git"
+  },
   "type": "module",
   "scripts": {
     "build": "next build",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "dev:pk": "npx partykit dev",
-    "dev": "next dev",
+    "dev": "concurrently \"npm:dev:pk\" \"next dev\"",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
     "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.14",
+    "@ai-sdk/openai": "^3.0.9",
     "@googleapis/youtube": "^16.1.0",
     "@hookform/resolvers": "^3.4.2",
     "@mantine/hooks": "^7.9.1",
@@ -27,15 +30,16 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@serwist/next": "^9.0.2",
     "@t3-oss/env-nextjs": "^0.10.1",
-    "@tanstack/react-query": "^5.25.0",
-    "@trpc/client": "next",
-    "@trpc/react-query": "next",
-    "@trpc/server": "next",
+    "@tanstack/react-query": "^4.42.0",
+    "@trpc/client": "^10.45.2",
+    "@trpc/next": "^10.45.2",
+    "@trpc/react-query": "^10.45.2",
+    "@trpc/server": "^10.45.2",
     "@vercel/analytics": "^1.2.2",
     "@vercel/kv": "^1.0.1",
     "@vercel/speed-insights": "^1.0.10",
     "@vidstack/react": "^1.11.21",
-    "ai": "^3.1.14",
+    "ai": "^6.0.31",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -45,7 +49,7 @@
     "geist": "^1.3.0",
     "html-entities": "^2.5.2",
     "lucide-react": "^0.379.0",
-    "next": "^14.2.1",
+    "next": "16.1.1-canary.24",
     "next-axiom": "^1.2.0",
     "next-themes": "^0.3.0",
     "partysocket": "1.0.1",
@@ -74,9 +78,10 @@
     "@types/react-dom": "^18.2.19",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
+    "concurrently": "^9.2.1",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.1.3",
-    "partykit": "0.0.104",
+    "eslint-config-next": "^16.1.1",
+    "partykit": "0.0.0-5527a74",
     "postcss": "^8.4.34",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.11",
@@ -91,5 +96,13 @@
   },
   "prisma": {
     "seed": "pnpm dlx tsx prisma/seed.ts"
-  }
+  },
+  "description": "![image](https://github.com/user-attachments/assets/45a1f009-d93a-487f-ada7-2b79b60dc416)",
+  "main": "next.config.js",
+  "keywords": [],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/empz/my-karaoke-party/issues"
+  },
+  "homepage": "https://github.com/empz/my-karaoke-party#readme"
 }

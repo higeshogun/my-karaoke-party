@@ -3,9 +3,9 @@ import JoinScene from "../join-scene";
 export default async function JoinPartyHashPage({
   params,
 }: {
-  params: { hash: string };
+  params: Promise<{ hash: string }>;
 }) {
-  const partyHash = params.hash;
+  const { hash: partyHash } = await params;
 
   return <JoinScene partyHash={partyHash} />;
 }

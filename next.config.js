@@ -22,6 +22,9 @@ const config = {
     remotePatterns: [
       {
         hostname: "i.ytimg.com"
+      },
+      {
+        hostname: "images.unsplash.com"
       }
     ]
   }

@@ -20,6 +20,7 @@ import { SongSearch } from "~/components/song-search";
 import { Button } from "~/components/ui/ui/button";
 import { env } from "~/env";
 import { getUrl } from "~/utils/url";
+import { MicManager } from "~/components/mic-manager";
 
 type Props = {
   party: Party;
@@ -133,6 +134,7 @@ export default function PlayerScene({ party, initialPlaylist }: Props) {
 
   return (
     <div className="flex h-screen w-full flex-row flex-nowrap">
+      <MicManager roomId={party.hash ?? ""} />
       <div className="grow-0 basis-1/3 overflow-y-auto border-r border-slate-500 px-4">
         <div className="py-4 text-center">
           <h1 className="text-outline scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">

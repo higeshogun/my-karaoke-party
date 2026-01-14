@@ -80,6 +80,11 @@ export function CreateParty() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          if (!name) {
+            console.warn("Attempted to Create Party with empty name");
+            return;
+          }
+
           createParty.mutate({ name });
         }}
         className="flex flex-col gap-2"

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { env } from "~/env";
 import { readLocalStorageValue, useLocalStorage } from "@mantine/hooks";
 import { SongSearch } from "~/components/song-search";
-import { ListMusic, Megaphone } from "lucide-react";
+import { ListMusic, Megaphone, Mic, MicOff } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -17,6 +17,7 @@ import {
 } from "~/components/ui/ui/accordion";
 import { decode } from "html-entities";
 import { useRouter } from "next/navigation";
+import { useMicSender } from "~/hooks/use-mic-sender";
 
 export function PartyScene({
   party,
@@ -27,6 +28,8 @@ export function PartyScene({
 }) {
   const [name] = useLocalStorage<string>({ key: "name" });
   const router = useRouter();
+
+  const { isMicOn, toggleMic, isConnected } = useMicSender({ roomId: party.hash ?? "" });
 
 
   const [playlist, setPlaylist] = useState<KaraokeParty["playlist"]>(
@@ -111,13 +114,26 @@ export function PartyScene({
         </div>
       </div>
 
-      <div className="fixed bottom-16 left-1/2 transform -translate-x-1/2 z-[100]">
+      <div className="fixed top-6 right-6 z-[100] flex flex-col gap-4">
         <button
           type="button"
-          className="rounded-full bg-yellow-200 p-2 text-black hover:text-white hover:bg-red-700 shadow-lg"
+          className="rounded-full bg-yellow-200 p-3 text-black hover:text-white hover:bg-red-700 shadow-xl border-2 border-transparent hover:border-white transition-all"
           onClick={sendHorn}
+          title="Send Horn"
         >
-          <Megaphone size={32} />
+          <Megaphone size={24} />
+        </button>
+
+        <button
+          type="button"
+          className={`rounded-full p-3 text-white shadow-xl transition-all border-2 ${isMicOn
+            ? "bg-red-500 animate-pulse border-red-300"
+            : "bg-blue-600 hover:bg-blue-700 border-transparent hover:border-white"
+            }`}
+          onClick={toggleMic}
+          title="Toggle Mic"
+        >
+          {isMicOn ? <MicOff size={24} /> : <Mic size={24} />}
         </button>
       </div>
 

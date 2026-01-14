@@ -1,0 +1,10 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "mykaraoke-party-party",
+  "main": "src/server.ts",
+  "compatibilityDate": "2026-01-13",
+  "serve": {
+    "path": "public",
+    "build": "src/client.ts"
+  }
+}

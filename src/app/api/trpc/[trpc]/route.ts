@@ -15,8 +15,18 @@ const createContext = async (req: NextRequest) => {
   });
 };
 
-const handler = (req: NextRequest) =>
-  fetchRequestHandler({
+const handler = async (req: NextRequest) => {
+  if (req.method === "POST") {
+    try {
+      const clone = req.clone();
+      const text = await clone.text();
+      console.log("tRPC Request Body:", text);
+    } catch (e) {
+      console.error("Failed to read request body", e);
+    }
+  }
+
+  return fetchRequestHandler({
     endpoint: "/api/trpc",
     req,
     router: appRouter,
@@ -24,11 +34,12 @@ const handler = (req: NextRequest) =>
     onError:
       env.NODE_ENV === "development"
         ? ({ path, error }) => {
-            console.error(
-              `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
-            );
-          }
+          console.error(
+            `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
+          );
+        }
         : undefined,
   });
+};
 
 export { handler as GET, handler as POST };

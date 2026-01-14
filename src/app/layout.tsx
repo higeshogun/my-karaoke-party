@@ -9,9 +9,9 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AxiomWebVitals } from "next-axiom";
 import { Toaster } from "~/components/ui/ui/sonner";
 
-const APP_NAME = "My Karaoke Party";
-const APP_DEFAULT_TITLE = "My Karaoke Party";
-const APP_TITLE_TEMPLATE = "%s - My Karaoke Party";
+const APP_NAME = "Pilipino Yatai";
+const APP_DEFAULT_TITLE = "Pilipino Yatai";
+const APP_TITLE_TEMPLATE = "%s - Pilipino Yatai";
 const APP_DESCRIPTION = "Host a karaoke party with your friends!";
 
 const roboto_slab = Roboto_Slab({
@@ -75,11 +75,16 @@ export default function RootLayout({
       lang="en"
       data-theme="synthwave"
       className={`theme-custom ${roboto_slab.variable} ${roboto_mono.variable}`}
+      suppressHydrationWarning
     >
       <body className="bg-gradient min-h-screen">
         <TRPCReactProvider>{children}</TRPCReactProvider>
-        <Analytics />
-        <SpeedInsights />
+        {process.env.NODE_ENV !== "development" && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
         <AxiomWebVitals />
         <Toaster />
       </body>

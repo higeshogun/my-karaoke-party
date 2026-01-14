@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { api } from "~/trpc/react";
 import { Plus, Search, Check, Loader2, Frown } from "lucide-react";
@@ -19,7 +21,14 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
   const [videoInputValue, setVideoInputValue] = useState("");
   const [canFetch, setCanFetch] = useState(false);
 
-  const { data, isError, refetch, isLoading, isFetched } =
+  // Playlist mutation
+  const playlistMutation = api.youtube.getPlaylist.useMutation();
+
+  const isPlaylistUrl = (url: string) => {
+    return url.includes("youtube.com/playlist") || url.includes("list=");
+  };
+
+  const { data: searchData, isError: isSearchError, refetch, isFetching: isSearchFetching, isFetched: isSearchFetched } =
     api.youtube.search.useQuery(
       {
         keyword: `${videoInputValue} karaoke`,
@@ -27,13 +36,24 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
       { refetchOnWindowFocus: false, enabled: false, retry: false },
     );
 
+  const displayData = isPlaylistUrl(videoInputValue) ? playlistMutation.data : searchData;
+  const isFetching = isPlaylistUrl(videoInputValue) ? playlistMutation.isPending : isSearchFetching;
+  const isError = isPlaylistUrl(videoInputValue) ? playlistMutation.isError : isSearchError;
+  const isFetched = isPlaylistUrl(videoInputValue) ? playlistMutation.isSuccess : isSearchFetched;
+
   // const [canPlayVideos, setCanPlayVideos] = useState<string[]>([]);
 
   return (
     <form
       onSubmit={async (e) => {
         e.preventDefault();
-        await refetch();
+
+        if (isPlaylistUrl(videoInputValue)) {
+          await playlistMutation.mutateAsync({ url: videoInputValue });
+        } else {
+          await refetch();
+        }
+
         setCanFetch(false);
       }}
     >
@@ -41,7 +61,7 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
         <Input
           type="text"
           name="video-url"
-          placeholder="Enter artist and/or song name..."
+          placeholder="Enter artist, song name, or YouTube Playlist URL..."
           className="w-full"
           value={videoInputValue}
           onChange={(e) => {
@@ -52,8 +72,8 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
           minLength={3}
           autoComplete="off"
         />
-        <Button type="submit" disabled={isLoading || !canFetch}>
-          {isLoading ? (
+        <Button type="submit" disabled={isFetching || !canFetch}>
+          {isFetching ? (
             <Loader2 className="mx-1 h-6 w-6 animate-spin" />
           ) : (
             <Search className="mx-1 h-6 w-6" />
@@ -72,7 +92,7 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
         </Alert>
       )}
 
-      {isFetched && !isError && !data?.length && (
+      {isFetched && !isError && !displayData?.length && (
         <Alert className="mt-4">
           <Frown className="h-4 w-4" />
           <AlertTitle>Nothing found!</AlertTitle>
@@ -82,7 +102,7 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
         </Alert>
       )}
 
-      {isLoading && (
+      {isFetching && (
         <div className="my-5 flex flex-col space-y-5 overflow-hidden">
           <Skeleton className="h-48 w-full rounded-xl" />
 
@@ -96,9 +116,9 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
         </div>
       )}
 
-      {data && (
+      {displayData && (
         <div className="my-5 flex flex-col space-y-5 overflow-hidden">
-          {data.map((video) => {
+          {displayData.map((video) => {
             const alreadyAdded = !!playlist.find(
               (v) => v.id === video.id.videoId && !v.playedAt,
             );

@@ -30,7 +30,19 @@ const Horn = z.object({
 	type: z.literal("horn"),
 });
 
-const Message = z.union([AddVideo, RemoveVideo, MarkAsPlayed, Horn]);
+const MicSignal = z.object({
+	type: z.enum(["mic:offer", "mic:answer", "mic:candidate"]),
+	target: z.string().optional(),
+	payload: z.any(),
+});
+
+const Message = z.union([
+	AddVideo,
+	RemoveVideo,
+	MarkAsPlayed,
+	Horn,
+	MicSignal,
+]);
 
 type KaraokePartySettings = {
 	orderByFairness: boolean;
@@ -52,7 +64,7 @@ export type KaraokeParty = {
 export default class Server implements Party.Server {
 	karaokeParty: KaraokeParty | undefined;
 
-	constructor(readonly room: Party.Room) {}
+	constructor(readonly room: Party.Room) { }
 
 	async onStart() {
 		this.karaokeParty =
@@ -77,9 +89,7 @@ export default class Server implements Party.Server {
 	}
 
 	async onMessage(message: string, _sender: Party.Connection) {
-		if (!this.karaokeParty) return;
-
-		console.log("Received message:", message);
+		// console.log("Received message:", message);
 
 		const result = Message.safeParse(JSON.parse(message));
 
@@ -89,6 +99,26 @@ export default class Server implements Party.Server {
 		}
 
 		const data = result.data;
+
+		if (data.type.startsWith("mic:")) {
+			// Handle signaling messages (ephemeral, don't save to state)
+			const signal = data as z.infer<typeof MicSignal>;
+			const msg = JSON.stringify({ ...signal, from: _sender.id });
+
+			if (signal.target) {
+				// Send to specific target
+				const targetConn = this.room.getConnection(signal.target);
+				if (targetConn) {
+					targetConn.send(msg);
+				}
+			} else {
+				// Broadcast to everyone else (e.g. offers)
+				this.room.broadcast(msg, [_sender.id]);
+			}
+			return;
+		}
+
+		if (!this.karaokeParty) return;
 
 		await this.room.storage.setAlarm(Date.now() + EXPIRY_PERIOD_MILLISECONDS);
 
@@ -158,7 +188,7 @@ export default class Server implements Party.Server {
 			}
 
 			default: {
-				console.error("Unknown message type", data);
+				// console.error("Unknown message type", data);
 			}
 		}
 	}

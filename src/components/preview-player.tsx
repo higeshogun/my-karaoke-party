@@ -1,3 +1,5 @@
+"use client";
+
 import "@vidstack/react/player/styles/base.css";
 
 import { useEffect, useRef } from "react";
