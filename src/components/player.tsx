@@ -107,36 +107,36 @@ export function Player({
     return (
       <div
         className={cn(
-          "mx-auto flex h-full w-full flex-col items-center justify-between space-y-6 p-4 pb-1 text-center",
+          "mx-auto flex h-full w-full flex-col items-center justify-between space-y-4 p-3 pb-1 text-center sm:space-y-6 sm:p-4",
           isFullscreen && "bg-gradient"
         )}
       >
-        <div>
-          <h1 className="text-outline scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+        <div className="space-y-1 sm:space-y-2">
+          <h1 className="text-outline scroll-m-20 text-xl font-extrabold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
             {decode(video.title)}
           </h1>
-          <h2 className="text-outline scroll-m-20 text-3xl font-bold tracking-tight lg:text-4xl">
-            <MicVocal className="mr-2 inline text-primary" size={32} />
+          <h2 className="text-outline scroll-m-20 text-lg font-bold tracking-tight sm:text-2xl md:text-3xl lg:text-4xl">
+            <MicVocal className="mr-1 inline text-primary sm:mr-2" size={20} />
             {video.singerName}
             <MicVocal
-              className="ml-2 inline scale-x-[-1] transform text-primary"
-              size={32}
+              className="ml-1 inline scale-x-[-1] transform text-primary sm:ml-2"
+              size={20}
             />
           </h2>
         </div>
 
-        <div>
-          <h3 className="mb-2 scroll-m-20 text-2xl font-semibold tracking-tight animate-in fade-in zoom-in">
+        <div className="space-y-2">
+          <h3 className="mb-2 scroll-m-20 text-base font-semibold tracking-tight animate-in fade-in zoom-in sm:text-xl md:text-2xl">
             This video cannot be embedded. Click the button to open a new tab in
             YouTube.
           </h3>
           <Button
             type="button"
-            className="w-fit self-center animate-in fade-in zoom-in"
+            className="w-fit self-center animate-in fade-in zoom-in text-sm sm:text-base"
             onClick={() => openYouTubeTab()}
           >
             Play in YouTube
-            <Youtube className="ml-2" />
+            <Youtube className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
           <div className="mt-2">
             <Button
@@ -154,11 +154,13 @@ export function Player({
         </div>
 
         <div className="relative flex w-full basis-1/4 items-end text-center">
-          <QrCode url={joinPartyUrl} />
+          <div className="hidden sm:block">
+            <QrCode url={joinPartyUrl} />
+          </div>
           <a
             href={joinPartyUrl}
             target="_blank"
-            className="font-mono text-xl text-white pl-4"
+            className="font-mono text-xs text-white pl-2 sm:text-lg sm:pl-4 md:text-xl"
           >
             {joinPartyUrl.split("//")[1]}
           </a>
@@ -197,15 +199,15 @@ export function Player({
           className={`flex w-full flex-col items-center justify-center bg-black p-4 ${isReady ? "bg-opacity-80" : "bg-opacity-0"
             }`}
         >
-          <h1 className="text-outline scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+          <h1 className="text-outline scroll-m-20 text-xl font-extrabold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
             {decode(video.title)}
           </h1>
-          <h2 className="text-outline scroll-m-20 text-3xl font-bold tracking-tight lg:text-4xl">
-            <MicVocal className="mr-2 inline text-primary" size={32} />
+          <h2 className="text-outline scroll-m-20 text-lg font-bold tracking-tight sm:text-2xl md:text-3xl lg:text-4xl">
+            <MicVocal className="mr-1 inline text-primary sm:mr-2" size={20} />
             {video.singerName}
             <MicVocal
-              className="ml-2 inline scale-x-[-1] transform text-primary"
-              size={32}
+              className="ml-1 inline scale-x-[-1] transform text-primary sm:ml-2"
+              size={20}
             />
           </h2>
         </div>
@@ -217,22 +219,25 @@ export function Player({
         )}
       </div>
 
-      <div className="absolute bottom-12 left-0 z-10 flex w-full flex-row justify-between px-4">
-        <QrCode url={joinPartyUrl} />
+      <div className="absolute bottom-8 left-0 z-10 flex w-full flex-row justify-between px-2 sm:bottom-12 sm:px-4">
+        <div className="hidden sm:block">
+          <QrCode url={joinPartyUrl} />
+        </div>
 
         <div
-          className={`self-end p-2 ${isPlaying && isFullscreen ? "hidden" : "block"
+          className={`self-end p-1 sm:p-2 ${isPlaying && isFullscreen ? "hidden" : "block"
             }`}
         >
           <Button
-            // className="bg-yellow-300"
             variant={"secondary"}
             type="button"
+            size="sm"
+            className="text-xs sm:text-sm"
             onClick={() => {
               onPlayerEnd();
             }}
           >
-            <SkipForward className="mr-2 h-5 w-5" />
+            <SkipForward className="mr-1 h-4 w-4 sm:mr-2 sm:h-5 sm:w-5" />
             Skip
           </Button>
           {/* <a

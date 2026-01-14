@@ -11,6 +11,8 @@ import { Input } from "./ui/ui/input";
 import { Button } from "./ui/ui/button";
 import { Skeleton } from "./ui/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "./ui/ui/alert";
+import { Checkbox } from "./ui/ui/checkbox";
+import { Label } from "./ui/ui/label";
 
 type Props = {
   onVideoAdded: (videoId: string, title: string, coverUrl: string) => void;
@@ -20,6 +22,7 @@ type Props = {
 export function SongSearch({ onVideoAdded, playlist }: Props) {
   const [videoInputValue, setVideoInputValue] = useState("");
   const [canFetch, setCanFetch] = useState(false);
+  const [embeddableOnly, setEmbeddableOnly] = useState(true);
 
   // Playlist mutation
   const playlistMutation = api.youtube.getPlaylist.useMutation();
@@ -32,6 +35,7 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
     api.youtube.search.useQuery(
       {
         keyword: `${videoInputValue} karaoke`,
+        videoEmbeddable: embeddableOnly,
       },
       { refetchOnWindowFocus: false, enabled: false, retry: false },
     );
@@ -81,6 +85,17 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
         </Button>
       </div>
 
+      <div className="mt-2 flex items-center space-x-2">
+        <Checkbox
+          id="embeddable"
+          checked={embeddableOnly}
+          onChange={(e) => setEmbeddableOnly(e.currentTarget.checked)}
+        />
+        <Label htmlFor="embeddable" className="cursor-pointer text-muted-foreground">
+          Only show embed-eligible videos
+        </Label>
+      </div>
+
       {isError && (
         <Alert variant={"destructive"} className="mt-4 bg-red-500 text-white">
           <Frown className="h-4 w-4" color="white" />
@@ -103,21 +118,17 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
       )}
 
       {isFetching && (
-        <div className="my-5 flex flex-col space-y-5 overflow-hidden">
-          <Skeleton className="h-48 w-full rounded-xl" />
+        <div className="my-3 flex flex-col space-y-3 overflow-hidden sm:my-5 sm:space-y-5">
+          <Skeleton className="h-32 w-full rounded-xl sm:h-48" />
 
-          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl sm:h-48" />
 
-          <Skeleton className="h-48 w-full rounded-xl" />
-
-          <Skeleton className="h-48 w-full rounded-xl" />
-
-          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl sm:h-48" />
         </div>
       )}
 
       {displayData && (
-        <div className="my-5 flex flex-col space-y-5 overflow-hidden">
+        <div className="my-3 flex flex-col space-y-3 overflow-hidden sm:my-5 sm:space-y-5">
           {displayData.map((video) => {
             const alreadyAdded = !!playlist.find(
               (v) => v.id === video.id.videoId && !v.playedAt,
@@ -128,7 +139,7 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
             return (
               <div
                 key={video.id.videoId}
-                className={"relative h-48 overflow-hidden rounded-lg animate-in fade-in"}
+                className={"relative h-32 overflow-hidden rounded-lg animate-in fade-in sm:h-48"}
               >
                 <PreviewPlayer
                   key={video.id.videoId}
@@ -139,14 +150,14 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
                 <div className="absolute inset-0 z-10 rounded-lg bg-black opacity-50" />
 
                 <div className="absolute top-0 z-30 w-full rounded-lg opacity-100">
-                  <p className="bg-black bg-opacity-70 p-3 text-xl font-bold text-white">
+                  <p className="bg-black bg-opacity-70 p-2 text-sm font-bold text-white line-clamp-2 sm:p-3 sm:text-xl">
                     {title}
                   </p>
                 </div>
 
-                <div className="absolute bottom-3 right-3 z-30 opacity-100 w-full flex justify-between">
+                <div className="absolute bottom-2 right-2 z-30 opacity-100 w-full flex justify-between sm:bottom-3 sm:right-3">
                   <div>
-                    <p className="bg-black bg-opacity-70 p-2 pl-5 text-sm text-white">
+                    <p className="bg-black bg-opacity-70 p-1.5 pl-3 text-xs text-white sm:p-2 sm:pl-5 sm:text-sm">
                       {video.snippet.channelTitle}
                     </p>
                   </div>
@@ -154,7 +165,7 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
                     type="button"
                     variant={"default"}
                     size="icon"
-                    className="shadow-xl animate-in spin-in"
+                    className="shadow-xl animate-in spin-in h-8 w-8 sm:h-10 sm:w-10"
                     disabled={alreadyAdded}
                     onClick={() =>
                       onVideoAdded(
@@ -164,7 +175,7 @@ export function SongSearch({ onVideoAdded, playlist }: Props) {
                       )
                     }
                   >
-                    {alreadyAdded ? <Check stroke="pink" /> : <Plus />}
+                    {alreadyAdded ? <Check stroke="pink" className="h-4 w-4 sm:h-5 sm:w-5" /> : <Plus className="h-4 w-4 sm:h-5 sm:w-5" />}
                   </Button>
                 </div>
               </div>

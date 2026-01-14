@@ -7,7 +7,7 @@ import {
   useHotkeys,
 } from "@mantine/hooks";
 import type { Party } from "@prisma/client";
-import { ListPlus, Maximize, Minimize, SkipForward, X } from "lucide-react";
+import { ListPlus, Maximize, Minimize, SkipForward, X, Menu, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import type { Message, KaraokeParty } from "party";
 import usePartySocket from "partysocket/react";
@@ -21,6 +21,7 @@ import { Button } from "~/components/ui/ui/button";
 import { env } from "~/env";
 import { getUrl } from "~/utils/url";
 import { MicManager } from "~/components/mic-manager";
+import { cn } from "~/lib/utils";
 
 type Props = {
   party: Party;
@@ -32,6 +33,7 @@ export default function PlayerScene({ party, initialPlaylist }: Props) {
     initialPlaylist.playlist ?? [],
   );
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [playHorn] = useSound("/sounds/buzzer.mp3");
   const lastHornTimeRef = useRef<number>(0);
   const togglePlayPauseRef = useRef<(() => void) | null>(null);
@@ -133,9 +135,45 @@ export default function PlayerScene({ party, initialPlaylist }: Props) {
   const joinPartyUrl = getUrl(`/join/${party.hash}`);
 
   return (
-    <div className="flex h-screen w-full flex-row flex-nowrap">
+    <div className="flex h-screen w-full flex-col bg-black md:flex-row md:flex-nowrap">
       <MicManager roomId={party.hash ?? ""} />
-      <div className="grow-0 basis-1/3 overflow-y-auto border-r border-slate-500 px-4">
+
+      {/* Mobile Header with Menu Toggle */}
+      <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-800 bg-black px-4 md:hidden">
+        <h1 className="text-outline text-xl font-extrabold tracking-tight text-white">
+          {party.name}
+        </h1>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="h-10 w-10 text-white hover:bg-slate-800"
+        >
+          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <ListPlus className="h-6 w-6" />}
+        </Button>
+      </div>
+
+      {/* Mobile Song Search Overlay */}
+      <div className={cn(
+        "absolute left-0 top-14 z-50 flex w-full flex-col bg-black/95 backdrop-blur-md transition-all duration-300 md:hidden",
+        isMobileMenuOpen ? "bottom-0 opacity-100" : "bottom-[100%] h-0 opacity-0 overflow-hidden"
+      )}>
+        <div className="flex-1 overflow-y-auto p-4">
+          <h2 className="mb-4 text-xl font-bold text-white">Add Songs</h2>
+          <SongSearch
+            key={`${party.hash}-mobile`}
+            playlist={playlist}
+            onVideoAdded={(videoId, title, coverUrl) => {
+              addSong(videoId, title, coverUrl);
+              setIsMobileMenuOpen(false);
+              toast.success("Song added to queue!");
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block md:grow-0 md:basis-1/3 overflow-y-auto border-r border-slate-500 px-4">
         <div className="py-4 text-center">
           <h1 className="text-outline scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">
             {party.name}
@@ -147,16 +185,18 @@ export default function PlayerScene({ party, initialPlaylist }: Props) {
           onVideoAdded={addSong}
         />
       </div>
-      <div className="grow-0 basis-2/3 overflow-auto">
+      {/* Main Content Area */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:grow-0 md:basis-2/3">
         <div className="flex h-full flex-col">
-          <div className="relative h-5/6" ref={ref}>
+          {/* Video Player */}
+          <div className="relative shrink-0 border-b border-slate-800 bg-black/50 overflow-hidden h-[40vh] min-h-[220px] md:h-5/6 md:border-b-0" ref={ref}>
             <Button
               onClick={toggle}
               variant="ghost"
               size="icon"
-              className="absolute bottom-0 right-3 z-10"
+              className="absolute bottom-2 right-2 z-10 h-10 w-10 rounded-full bg-black/40 hover:bg-black/60 md:right-3"
             >
-              {fullscreen ? <Minimize /> : <Maximize />}
+              {fullscreen ? <Minimize className="h-5 w-5 text-white" /> : <Maximize className="h-5 w-5 text-white" />}
             </Button>
             {currentVideo ? (
               <Player
@@ -176,58 +216,67 @@ export default function PlayerScene({ party, initialPlaylist }: Props) {
               />
             )}
           </div>
-          <div className="h-1/6 min-h-[150px] border-t border-slate-500 p-4">
+          {/* Playlist Queue */}
+          <div className="flex flex-1 flex-col overflow-hidden bg-slate-900/50 p-3 md:h-1/6 md:min-h-[150px] md:p-4">
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400 md:hidden">
+              Up Next ({nextVideos.length})
+            </h3>
             {nextVideos.length > 0 ? (
               <>
-                <div className="no-scrollbar flex h-full flex-row space-x-2 overflow-x-scroll">
+                <div className="no-scrollbar flex h-full flex-row space-x-3 overflow-x-auto pb-2">
                   {nextVideos.map((v, i) => (
                     <div
                       key={v.id}
-                      className="relative flex aspect-[4/3] h-full items-center justify-center rounded-lg bg-slate-200 p-3 text-center text-primary-foreground animate-in slide-in-from-bottom first:border-2 first:border-amber-500"
+                      className="relative flex aspect-[4/3] h-full min-w-[140px] shrink-0 items-center justify-center rounded-lg bg-slate-800 p-0 text-center text-primary-foreground shadow-lg animate-in slide-in-from-bottom border border-slate-700 md:min-w-[100px] md:p-3"
                     >
                       <Image
                         src={v.coverUrl}
                         fill={true}
-                        className="rounded-lg hover:opacity-50"
+                        className="rounded-lg object-cover hover:opacity-50"
                         alt="Cover"
                       />
 
                       <Button
-                        variant="link"
+                        variant="destructive"
                         size="icon"
-                        className="absolute right-0 top-0 z-10 hover:bg-gray-400"
+                        className="absolute right-1 top-1 z-10 h-7 w-7 rounded-full opacity-80 shadow-sm hover:opacity-100 md:h-8 md:w-8 md:right-0 md:top-0 md:rounded-md"
                         onClick={() => {
                           removeSong(v.id);
                         }}
                       >
-                        <X color="red" />
+                        <X className="h-4 w-4 text-white" />
                       </Button>
 
                       {i === 0 && (
+                        <div className="absolute inset-0 z-0 rounded-lg ring-2 ring-amber-500 pointer-events-none" />
+                      )}
+
+                      {i === 0 && (
                         <Button
-                          variant="ghost"
+                          variant="secondary"
                           size="icon"
-                          className="absolute bottom-0 right-0 z-10 rounded text-yellow-300 hover:bg-gray-400"
+                          className="absolute bottom-1 right-1 z-10 h-8 w-8 rounded-full opacity-90 shadow-sm hover:opacity-100 md:bottom-0 md:right-0 md:rounded-md"
                           onClick={() => {
                             markAsPlayed();
                           }}
                         >
-                          <SkipForward />
+                          <SkipForward className="h-4 w-4" />
                         </Button>
                       )}
-
-                      {/* <div>{decode(v.title)}</div> */}
                     </div>
                   ))}
                 </div>
               </>
             ) : (
-              <div className="flex aspect-[4/3] h-full items-center justify-center rounded-lg border-2 border-dashed border-slate-500 bg-slate-200 p-3 text-center text-slate-500">
-                <ListPlus
-                  size={32}
-                  strokeWidth={1.5}
-                  className="animate-bounce"
-                />
+              <div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed border-slate-700/50 bg-slate-900 p-4 text-center text-slate-500">
+                <div className="flex flex-col items-center gap-2">
+                  <ListPlus
+                    size={24}
+                    strokeWidth={1.5}
+                    className="animate-bounce opacity-50"
+                  />
+                  <p className="text-sm">Queue is empty</p>
+                </div>
               </div>
             )}
           </div>

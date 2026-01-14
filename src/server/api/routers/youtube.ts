@@ -4,11 +4,19 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const youtubeRouter = createTRPCRouter({
   search: publicProcedure
-    .input(z.object({ keyword: z.string() }))
+    .input(
+      z.object({
+        keyword: z.string(),
+        videoEmbeddable: z.boolean().optional().default(true),
+      }),
+    )
     .query(async ({ input, ctx }) => {
-      log.info("Searching for videos", { keyword: input.keyword });
+      log.info("Searching for videos", {
+        keyword: input.keyword,
+        videoEmbeddable: input.videoEmbeddable,
+      });
 
-      const cacheKey = `youtube-search:${input.keyword}`;
+      const cacheKey = `youtube-search:${input.keyword}:${input.videoEmbeddable}`;
 
       const cachedVideos =
         await ctx.cache.get<ReturnType<typeof ctx.youtube.searchVideo>>(
@@ -21,7 +29,11 @@ export const youtubeRouter = createTRPCRouter({
           keyword: input.keyword,
         });
 
-        const videos = await ctx.youtube.searchVideo(input.keyword, 24);
+        const videos = await ctx.youtube.searchVideo(
+          input.keyword,
+          24,
+          input.videoEmbeddable,
+        );
 
         if (videos) {
           log.info("Storing results in cache for", { keyword: input.keyword });

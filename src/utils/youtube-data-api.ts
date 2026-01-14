@@ -92,7 +92,7 @@ class YouTubeDataAPI {
   //   return response.data.items[0]; // Might return undefined if no match
   // }
 
-  async searchVideo(query: string, maxResults = 10) {
+  async searchVideo(query: string, maxResults = 10, videoEmbeddable = false) {
     let lastError: unknown;
 
     for (const [index, apiKey] of this.apiKeys.entries()) {
@@ -108,6 +108,7 @@ class YouTubeDataAPI {
               type: "video",
               q: query,
               maxResults,
+              videoEmbeddable: videoEmbeddable ? "true" : undefined,
             },
           },
         );
