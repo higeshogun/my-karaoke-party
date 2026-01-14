@@ -65,4 +65,3 @@ This project is a fork and evolution of:
 - [empz/my-karaoke-party](https://github.com/empz/my-karaoke-party) - The original karaoke party foundation.
 - [suda/wireless-microphone](https://github.com/suda/wireless-microphone) - The WebRTC wireless microphone implementation.
 
-Feel free to open PRs or issues. Live site: [mykaraoke.party](https://www.mykaraoke.party)
